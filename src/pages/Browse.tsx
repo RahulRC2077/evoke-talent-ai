@@ -1,3 +1,5 @@
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import ArtistCard from "@/components/ArtistCard";
 import { Input } from "@/components/ui/input";
@@ -76,10 +78,81 @@ const MOCK_ARTISTS = [
   },
 ];
 
-const CATEGORIES = ["All", "DJ", "Photographer", "Band", "Comedian", "Singer", "Anchor"];
-const LOCATIONS = ["All Cities", "Mumbai", "Delhi", "Bangalore", "Pune", "Ahmedabad"];
+const CATEGORIES = ["DJ", "Photographer", "Band", "Comedian", "Singer", "Anchor"];
+const LOCATIONS = ["Mumbai", "Delhi", "Bangalore", "Pune", "Ahmedabad"];
 
 const Browse = () => {
+  const [searchParams] = useSearchParams();
+  
+  // Search and filter state
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || "");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState([50000]);
+  const [minRating, setMinRating] = useState([1]);
+
+  // Update search query from URL params
+  useEffect(() => {
+    const searchFromUrl = searchParams.get('search');
+    if (searchFromUrl) {
+      setSearchQuery(searchFromUrl);
+    }
+  }, [searchParams]);
+
+  // Toggle category selection
+  const toggleCategory = (category: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(category) 
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    );
+  };
+
+  // Toggle location selection
+  const toggleLocation = (location: string) => {
+    setSelectedLocations(prev => 
+      prev.includes(location) 
+        ? prev.filter(l => l !== location)
+        : [...prev, location]
+    );
+  };
+
+  // Reset all filters
+  const resetFilters = () => {
+    setSearchQuery("");
+    setSelectedCategories([]);
+    setSelectedLocations([]);
+    setPriceRange([50000]);
+    setMinRating([1]);
+  };
+
+  // Filter and search logic
+  const filteredArtists = useMemo(() => {
+    return MOCK_ARTISTS.filter(artist => {
+      // Search filter - matches name, category, or tags
+      const matchesSearch = searchQuery === "" || 
+        artist.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        artist.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        artist.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      // Category filter
+      const matchesCategory = selectedCategories.length === 0 || 
+        selectedCategories.includes(artist.category);
+
+      // Location filter
+      const matchesLocation = selectedLocations.length === 0 || 
+        selectedLocations.includes(artist.location);
+
+      // Price filter - convert price string to number
+      const artistPrice = parseInt(artist.price.replace(/[₹,]/g, ''));
+      const matchesPrice = artistPrice <= priceRange[0];
+
+      // Rating filter
+      const matchesRating = artist.rating >= minRating[0];
+
+      return matchesSearch && matchesCategory && matchesLocation && matchesPrice && matchesRating;
+    });
+  }, [searchQuery, selectedCategories, selectedLocations, priceRange, minRating]);
   return (
     <div className="min-h-screen bg-secondary/20">
       <Navbar />
@@ -106,8 +179,16 @@ const Browse = () => {
                 <div className="space-y-3">
                   {CATEGORIES.map((category) => (
                     <div key={category} className="flex items-center space-x-2">
-                      <Checkbox id={category} />
-                      <label htmlFor={category} className="text-sm cursor-pointer">
+                      <Checkbox 
+                        id={category}
+                        checked={selectedCategories.includes(category)}
+                        onCheckedChange={() => toggleCategory(category)}
+                      />
+                      <label 
+                        htmlFor={category} 
+                        className="text-sm cursor-pointer"
+                        onClick={() => toggleCategory(category)}
+                      >
                         {category}
                       </label>
                     </div>
@@ -120,8 +201,16 @@ const Browse = () => {
                 <div className="space-y-3">
                   {LOCATIONS.map((location) => (
                     <div key={location} className="flex items-center space-x-2">
-                      <Checkbox id={location} />
-                      <label htmlFor={location} className="text-sm cursor-pointer">
+                      <Checkbox 
+                        id={location}
+                        checked={selectedLocations.includes(location)}
+                        onCheckedChange={() => toggleLocation(location)}
+                      />
+                      <label 
+                        htmlFor={location} 
+                        className="text-sm cursor-pointer"
+                        onClick={() => toggleLocation(location)}
+                      >
                         {location}
                       </label>
                     </div>
@@ -131,17 +220,43 @@ const Browse = () => {
 
               <div>
                 <label className="text-sm font-medium mb-3 block">
-                  Price Range: ₹5,000 - ₹50,000
+                  Price Range: Up to ₹{priceRange[0].toLocaleString('en-IN')}
                 </label>
-                <Slider defaultValue={[25000]} max={50000} min={5000} step={1000} />
+                <Slider 
+                  value={priceRange} 
+                  onValueChange={setPriceRange}
+                  max={50000} 
+                  min={5000} 
+                  step={1000} 
+                />
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <span>₹5,000</span>
+                  <span>₹50,000</span>
+                </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-3 block">Minimum Rating</label>
-                <Slider defaultValue={[4]} max={5} min={1} step={0.5} />
+                <label className="text-sm font-medium mb-3 block">
+                  Minimum Rating: {minRating[0].toFixed(1)}★
+                </label>
+                <Slider 
+                  value={minRating} 
+                  onValueChange={setMinRating}
+                  max={5} 
+                  min={1} 
+                  step={0.5} 
+                />
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <span>1★</span>
+                  <span>5★</span>
+                </div>
               </div>
 
-              <Button className="w-full" variant="outline">
+              <Button 
+                className="w-full" 
+                variant="outline"
+                onClick={resetFilters}
+              >
                 Reset Filters
               </Button>
             </div>
@@ -155,6 +270,8 @@ const Browse = () => {
                 <Input 
                   placeholder="Search artists by name, skill, or category..."
                   className="pl-10 h-12"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <Button variant="outline" size="lg" className="lg:hidden">
@@ -162,15 +279,46 @@ const Browse = () => {
               </Button>
             </div>
 
-            <div className="mb-4 text-sm text-muted-foreground">
-              Showing {MOCK_ARTISTS.length} artists
+            <div className="mb-4 flex items-center justify-between">
+              <div className="text-sm text-muted-foreground">
+                Showing {filteredArtists.length} {filteredArtists.length === 1 ? 'artist' : 'artists'}
+              </div>
+              {(searchQuery || selectedCategories.length > 0 || selectedLocations.length > 0 || priceRange[0] < 50000 || minRating[0] > 1) && (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={resetFilters}
+                  className="text-primary"
+                >
+                  Clear all filters
+                </Button>
+              )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {MOCK_ARTISTS.map((artist) => (
-                <ArtistCard key={artist.id} {...artist} />
-              ))}
-            </div>
+            {filteredArtists.length === 0 ? (
+              <Card className="p-12 text-center">
+                <div className="space-y-3">
+                  <Search className="h-12 w-12 mx-auto text-muted-foreground" />
+                  <h3 className="text-xl font-semibold">No artists found</h3>
+                  <p className="text-muted-foreground">
+                    Try adjusting your filters or search terms
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    onClick={resetFilters}
+                    className="mt-4"
+                  >
+                    Reset Filters
+                  </Button>
+                </div>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredArtists.map((artist) => (
+                  <ArtistCard key={artist.id} {...artist} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

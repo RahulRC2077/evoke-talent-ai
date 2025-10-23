@@ -1,9 +1,28 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Sparkles } from "lucide-react";
 import heroImage from "@/assets/hero-bg.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (query?: string) => {
+    const searchTerm = query || searchQuery;
+    if (searchTerm) {
+      navigate(`/browse?search=${encodeURIComponent(searchTerm)}`);
+    } else {
+      navigate('/browse');
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
   return (
     <section className="relative overflow-hidden">
       <div 
@@ -41,19 +60,46 @@ const Hero = () => {
                 <Input 
                   placeholder="What kind of artist are you looking for?"
                   className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleKeyPress}
                 />
               </div>
-              <Button variant="hero" size="lg">
+              <Button 
+                variant="hero" 
+                size="lg"
+                onClick={() => handleSearch()}
+              >
                 Search Artists
               </Button>
             </div>
             
             <div className="flex items-center justify-center gap-6 mt-6 text-sm text-muted-foreground">
               <span>Popular:</span>
-              <button className="hover:text-primary transition-colors">DJ</button>
-              <button className="hover:text-primary transition-colors">Photographer</button>
-              <button className="hover:text-primary transition-colors">Band</button>
-              <button className="hover:text-primary transition-colors">Comedian</button>
+              <button 
+                onClick={() => handleSearch('DJ')}
+                className="hover:text-primary transition-colors"
+              >
+                DJ
+              </button>
+              <button 
+                onClick={() => handleSearch('Photographer')}
+                className="hover:text-primary transition-colors"
+              >
+                Photographer
+              </button>
+              <button 
+                onClick={() => handleSearch('Band')}
+                className="hover:text-primary transition-colors"
+              >
+                Band
+              </button>
+              <button 
+                onClick={() => handleSearch('Comedian')}
+                className="hover:text-primary transition-colors"
+              >
+                Comedian
+              </button>
             </div>
           </div>
         </div>
