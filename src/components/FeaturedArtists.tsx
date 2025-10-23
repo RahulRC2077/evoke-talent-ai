@@ -45,6 +45,28 @@ const FEATURED_ARTISTS = [
     image: "https://images.unsplash.com/photo-1485546246426-74dc88dec4d9?w=800&auto=format&fit=crop",
     tags: ["Stand-up", "Corporate", "English"],
   },
+  {
+    id: "5",
+    name: "Neha Singh",
+    category: "Singer",
+    rating: 4.9,
+    reviews: 142,
+    price: "₹30,000",
+    location: "Mumbai",
+    image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&auto=format&fit=crop",
+    tags: ["Bollywood", "Classical", "Ghazal"],
+  },
+  {
+    id: "6",
+    name: "Amit Patel",
+    category: "Anchor",
+    rating: 4.6,
+    reviews: 98,
+    price: "₹12,000",
+    location: "Ahmedabad",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop",
+    tags: ["Corporate", "Wedding", "Bilingual"],
+  },
 ];
 
 const FeaturedArtists = () => {

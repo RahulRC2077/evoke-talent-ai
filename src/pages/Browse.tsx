@@ -20,6 +20,7 @@ const MOCK_ARTISTS = [
     location: "Mumbai",
     image: "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&auto=format&fit=crop",
     tags: ["EDM", "House", "Techno"],
+    bio: "Professional DJ with 8+ years of experience spinning at clubs, weddings, and corporate events across India. Specializing in EDM, House, and Techno, I create unforgettable experiences that keep the dance floor packed all night long. Known for seamless mixing and reading the crowd perfectly.",
   },
   {
     id: "2",
@@ -31,6 +32,7 @@ const MOCK_ARTISTS = [
     location: "Delhi",
     image: "https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=800&auto=format&fit=crop",
     tags: ["Wedding", "Portrait", "Events"],
+    bio: "Award-winning photographer passionate about capturing life's precious moments. With a keen eye for detail and emotion, I specialize in wedding photography, portraits, and event coverage. My style blends candid storytelling with artistic composition to create timeless memories.",
   },
   {
     id: "3",
@@ -42,6 +44,7 @@ const MOCK_ARTISTS = [
     location: "Bangalore",
     image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop",
     tags: ["Rock", "Pop", "Acoustic"],
+    bio: "Five-piece band bringing soulful acoustic performances to your events. Our versatile repertoire spans Rock, Pop, and Acoustic genres, perfect for intimate gatherings or large celebrations. We've performed at 200+ events and pride ourselves on creating magical musical experiences.",
   },
   {
     id: "4",
@@ -53,6 +56,7 @@ const MOCK_ARTISTS = [
     location: "Pune",
     image: "https://images.unsplash.com/photo-1485546246426-74dc88dec4d9?w=800&auto=format&fit=crop",
     tags: ["Stand-up", "Corporate", "English"],
+    bio: "Stand-up comedian who believes laughter is the best medicine. Performing clean, relatable humor perfect for corporate events, college fests, and private parties. My shows blend observational comedy with interactive elements, ensuring everyone leaves with a smile.",
   },
   {
     id: "5",
@@ -64,6 +68,7 @@ const MOCK_ARTISTS = [
     location: "Mumbai",
     image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&auto=format&fit=crop",
     tags: ["Bollywood", "Classical", "Ghazal"],
+    bio: "Versatile vocalist with classical training and a passion for Bollywood and Ghazals. Having trained under renowned maestros, I bring soul and emotion to every performance. Whether it's a wedding sangeet or a corporate gala, I create musical moments that touch hearts.",
   },
   {
     id: "6",
@@ -75,6 +80,7 @@ const MOCK_ARTISTS = [
     location: "Ahmedabad",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop",
     tags: ["Corporate", "Wedding", "Bilingual"],
+    bio: "Dynamic bilingual anchor and emcee specializing in corporate events, weddings, and product launches. With excellent stage presence and the ability to engage any audience, I ensure your event flows smoothly and keeps guests entertained throughout.",
   },
 ];
 
@@ -126,29 +132,81 @@ const Browse = () => {
     setMinRating([1]);
   };
 
-  // Filter and search logic
+  // Smart query parser - extracts filters from natural language
+  const parseSmartQuery = (query: string) => {
+    const lowerQuery = query.toLowerCase();
+    const parsed = {
+      categories: [] as string[],
+      locations: [] as string[],
+      minRating: 1,
+      maxPrice: 50000,
+    };
+
+    // Extract rating (e.g., "4 star", "5 star rated", "4.5 stars")
+    const ratingMatch = lowerQuery.match(/(\d+(?:\.\d+)?)\s*star/);
+    if (ratingMatch) {
+      parsed.minRating = parseFloat(ratingMatch[1]);
+    }
+
+    // Extract categories
+    CATEGORIES.forEach(category => {
+      if (lowerQuery.includes(category.toLowerCase())) {
+        parsed.categories.push(category);
+      }
+    });
+
+    // Extract locations
+    LOCATIONS.forEach(location => {
+      if (lowerQuery.includes(location.toLowerCase())) {
+        parsed.locations.push(location);
+      }
+    });
+
+    // Extract price (e.g., "under 20000", "below 15k")
+    const priceMatch = lowerQuery.match(/(?:under|below|max|maximum)\s*₹?\s*(\d+)k?/);
+    if (priceMatch) {
+      const price = parseInt(priceMatch[1]);
+      parsed.maxPrice = priceMatch[0].includes('k') ? price * 1000 : price;
+    }
+
+    return parsed;
+  };
+
+  // Filter and search logic with smart parsing
   const filteredArtists = useMemo(() => {
     return MOCK_ARTISTS.filter(artist => {
-      // Search filter - matches name, category, or tags
+      // Parse smart query if exists
+      const smartFilters = searchQuery ? parseSmartQuery(searchQuery) : null;
+
+      // Search filter - matches name, category, tags, bio, or use smart filters
       const matchesSearch = searchQuery === "" || 
         artist.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         artist.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        artist.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+        artist.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        artist.bio.toLowerCase().includes(searchQuery.toLowerCase());
 
-      // Category filter
-      const matchesCategory = selectedCategories.length === 0 || 
-        selectedCategories.includes(artist.category);
+      // Category filter - from UI or smart query
+      const categoriesToMatch = selectedCategories.length > 0 
+        ? selectedCategories 
+        : (smartFilters?.categories.length ? smartFilters.categories : []);
+      const matchesCategory = categoriesToMatch.length === 0 || 
+        categoriesToMatch.includes(artist.category);
 
-      // Location filter
-      const matchesLocation = selectedLocations.length === 0 || 
-        selectedLocations.includes(artist.location);
+      // Location filter - from UI or smart query
+      const locationsToMatch = selectedLocations.length > 0 
+        ? selectedLocations 
+        : (smartFilters?.locations.length ? smartFilters.locations : []);
+      const matchesLocation = locationsToMatch.length === 0 || 
+        locationsToMatch.includes(artist.location);
 
-      // Price filter - convert price string to number
+      // Price filter - from UI or smart query
+      const maxPriceToCheck = smartFilters?.maxPrice ?? priceRange[0];
       const artistPrice = parseInt(artist.price.replace(/[₹,]/g, ''));
-      const matchesPrice = artistPrice <= priceRange[0];
+      const matchesPrice = artistPrice <= maxPriceToCheck;
 
-      // Rating filter
-      const matchesRating = artist.rating >= minRating[0];
+      // Rating filter - from UI or smart query
+      const minRatingToCheck = smartFilters ? Math.max(smartFilters.minRating, minRating[0]) : minRating[0];
+      const matchesRating = artist.rating >= minRatingToCheck;
 
       return matchesSearch && matchesCategory && matchesLocation && matchesPrice && matchesRating;
     });
