@@ -15,7 +15,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        display: ['Archivo Black', 'sans-serif'],
+        neopop: ['Gilroy', 'Inter', 'sans-serif'],
+        display: ['Gilroy', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

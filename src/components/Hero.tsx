@@ -19,7 +19,7 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left side - Text content */}
           <div className="space-y-8">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight text-foreground">
+            <h1 className="font-neopop text-5xl md:text-6xl lg:text-7xl leading-tight text-foreground">
               Connecting event planners with entertainers and speakers in minutes
             </h1>
             

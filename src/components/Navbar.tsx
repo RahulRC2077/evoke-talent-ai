@@ -13,17 +13,23 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/browse" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            <Link to="/browse" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
               Talent
             </Link>
-            <Link to="/how-it-works" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            <Link to="/how-it-works" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
               How it Works
             </Link>
-            <Link to="/pricing" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            <Link to="/pricing" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
               Pricing
             </Link>
-            <Link to="/about" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+            <Link to="/about" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
               About
+            </Link>
+            <Link to="/bookings" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
+              Bookings
+            </Link>
+            <Link to="/messages" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
+              Messages
             </Link>
           </div>
 
