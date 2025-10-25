@@ -71,14 +71,11 @@ const FEATURED_ARTISTS = [
 
 const FeaturedArtists = () => {
   return (
-    <section className="py-20 bg-secondary/30">
+    <section className="py-20 bg-accent">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">Featured Artists</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Handpicked talented professionals ready to make your event unforgettable
-          </p>
-        </div>
+        <h2 className="text-4xl md:text-5xl font-bold text-accent-foreground text-center mb-12">
+          Featured Talent
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {FEATURED_ARTISTS.map((artist) => (

@@ -1,105 +1,99 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, Sparkles } from "lucide-react";
-import heroImage from "@/assets/hero-bg.jpg";
 
 const Hero = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSearch = (query?: string) => {
-    const searchTerm = query || searchQuery;
-    if (searchTerm) {
-      navigate(`/browse?search=${encodeURIComponent(searchTerm)}`);
-    } else {
-      navigate('/browse');
-    }
+  const handleCreateEvent = () => {
+    navigate('/browse');
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
+  const handleSignUpArtist = () => {
+    navigate('/auth');
   };
+
   return (
-    <section className="relative overflow-hidden">
-      <div 
-        className="absolute inset-0 bg-gradient-hero opacity-90"
-        style={{
-          backgroundImage: `url(${heroImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundBlendMode: 'overlay'
-        }}
-      />
-      
-      <div className="relative container mx-auto px-4 py-24 md:py-32">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-light border border-primary/20">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-primary">AI-Powered Artist Discovery</span>
-          </div>
-          
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-            Book the Perfect Artist
-            <span className="block bg-gradient-primary bg-clip-text text-transparent mt-2">
-              for Your Event
-            </span>
-          </h1>
-          
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Discover and book talented musicians, DJs, photographers, comedians, and performers for your next event. Powered by AI for perfect matches.
-          </p>
+    <section className="relative overflow-hidden bg-gradient-hero">
+      <div className="container mx-auto px-4 py-16 md:py-24">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left side - Text content */}
+          <div className="space-y-8">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight text-foreground">
+              Connecting event planners with entertainers and speakers in minutes
+            </h1>
+            
+            <p className="text-xl text-muted-foreground max-w-xl">
+              Your one-stop solution for vetted talent booking
+            </p>
 
-          <div className="max-w-2xl mx-auto">
-            <div className="flex gap-3 p-2 bg-card rounded-xl shadow-xl border">
-              <div className="flex-1 flex items-center gap-2 px-4">
-                <Search className="h-5 w-5 text-muted-foreground" />
-                <Input 
-                  placeholder="What kind of artist are you looking for?"
-                  className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
-              </div>
+            <div className="flex flex-col sm:flex-row gap-4">
               <Button 
-                variant="hero" 
-                size="lg"
-                onClick={() => handleSearch()}
+                size="lg" 
+                variant="default"
+                onClick={handleCreateEvent}
+                className="rounded-full text-base font-semibold px-8"
               >
-                Search Artists
+                Create Your Event
+              </Button>
+              <Button 
+                size="lg" 
+                variant="secondary"
+                onClick={handleSignUpArtist}
+                className="rounded-full text-base font-semibold px-8 bg-secondary hover:bg-secondary/80"
+              >
+                Sign Up as Entertainer
               </Button>
             </div>
-            
-            <div className="flex items-center justify-center gap-6 mt-6 text-sm text-muted-foreground">
-              <span>Popular:</span>
-              <button 
-                onClick={() => handleSearch('DJ')}
-                className="hover:text-primary transition-colors"
-              >
-                DJ
-              </button>
-              <button 
-                onClick={() => handleSearch('Photographer')}
-                className="hover:text-primary transition-colors"
-              >
-                Photographer
-              </button>
-              <button 
-                onClick={() => handleSearch('Band')}
-                className="hover:text-primary transition-colors"
-              >
-                Band
-              </button>
-              <button 
-                onClick={() => handleSearch('Comedian')}
-                className="hover:text-primary transition-colors"
-              >
-                Comedian
-              </button>
+          </div>
+
+          {/* Right side - Illustration/Mockup */}
+          <div className="relative hidden lg:block">
+            <div className="relative">
+              {/* Abstract shapes mimicking eva's design */}
+              <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full opacity-30 blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent rounded-full opacity-20 blur-3xl" />
+              
+              {/* Mockup card */}
+              <div className="relative z-10 bg-card rounded-3xl shadow-2xl p-8 border border-border">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-primary" />
+                    <div className="flex-1">
+                      <div className="h-4 bg-muted rounded w-32 mb-2" />
+                      <div className="h-3 bg-muted/50 rounded w-24" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="p-4 bg-primary/10 rounded-xl border border-primary/20">
+                      <div className="text-sm font-semibold text-primary mb-2">I'm looking for this type of talent for my event:</div>
+                      <div className="text-xs text-foreground">Musical Acts</div>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      <div className="px-4 py-2 rounded-full border-2 border-primary text-primary text-sm font-medium">
+                        Bluegrass
+                      </div>
+                      <div className="px-4 py-2 rounded-full border-2 border-primary text-primary text-sm font-medium">
+                        Singer-Songwriter
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="text-xs font-semibold text-foreground">Band Setups</div>
+                      <div className="flex gap-2">
+                        <div className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium">
+                          Full Band
+                        </div>
+                        <div className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium">
+                          Solo
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

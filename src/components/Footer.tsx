@@ -3,32 +3,29 @@ import { Music, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="border-t bg-secondary/30">
+    <footer className="border-t bg-background">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                <Music className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                ARTIQ
+              <span className="text-2xl font-display text-foreground">
+                artiq
               </span>
             </Link>
             <p className="text-sm text-muted-foreground">
               Connecting talented artists with clients worldwide. Book the perfect talent for your next event.
             </p>
             <div className="flex gap-3">
-              <a href="#" className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
+              <a href="#" className="h-9 w-9 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
                 <Facebook className="h-4 w-4" />
               </a>
-              <a href="#" className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
+              <a href="#" className="h-9 w-9 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
                 <Twitter className="h-4 w-4" />
               </a>
-              <a href="#" className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
+              <a href="#" className="h-9 w-9 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
                 <Instagram className="h-4 w-4" />
               </a>
-              <a href="#" className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
+              <a href="#" className="h-9 w-9 rounded-full bg-muted flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
                 <Linkedin className="h-4 w-4" />
               </a>
             </div>

@@ -22,11 +22,8 @@ const Auth = () => {
       <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-primary">
-              <Music className="h-7 w-7 text-primary-foreground" />
-            </div>
-            <span className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              ARTIQ
+            <span className="text-3xl font-display text-foreground">
+              artiq
             </span>
           </Link>
           <h1 className="text-2xl font-bold mt-4">Welcome</h1>
@@ -49,7 +46,7 @@ const Auth = () => {
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" required />
               </div>
-              <Button type="submit" className="w-full" variant="hero" disabled={isLoading}>
+              <Button type="submit" className="w-full" variant="default" disabled={isLoading}>
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
@@ -80,7 +77,7 @@ const Auth = () => {
                   <option value="artist">Artist (Offering services)</option>
                 </select>
               </div>
-              <Button type="submit" className="w-full" variant="hero" disabled={isLoading}>
+              <Button type="submit" className="w-full" variant="default" disabled={isLoading}>
                 {isLoading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
