@@ -3,45 +3,22 @@ import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, User } from "lucide-react";
+import { Calendar, MapPin, User, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Bookings = () => {
   const navigate = useNavigate();
+  const { cart, removeFromCart } = useCart();
+  const { toast } = useToast();
 
-  // Mock bookings data
-  const bookings = [
-    {
-      id: "1",
-      artistName: "DJ Rhythm Wave",
-      eventDate: "2025-02-15",
-      location: "Mumbai, India",
-      status: "confirmed",
-      price: "₹25,000",
-      image: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&h=400&fit=crop",
-    },
-    {
-      id: "2",
-      artistName: "Priya Sharma",
-      eventDate: "2025-03-10",
-      location: "Delhi, India",
-      status: "pending",
-      price: "₹18,000",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
-    },
-  ];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "confirmed":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "completed":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
+  const handleRemoveFromCart = (artistId: string, artistName: string) => {
+    removeFromCart(artistId);
+    toast({
+      title: "Removed from Cart",
+      description: `${artistName} has been removed from your bookings.`,
+    });
   };
 
   return (
@@ -52,21 +29,21 @@ const Bookings = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="mb-12">
             <h1 className="font-neopop text-foreground mb-4">
-              My Bookings
+              My Cart
             </h1>
             <p className="text-muted-foreground text-lg">
-              Manage your upcoming and past event bookings
+              Artists you've added to your cart for booking
             </p>
           </div>
 
-          {bookings.length === 0 ? (
+          {cart.length === 0 ? (
             <Card className="p-12 text-center">
               <User className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-xl font-bold text-foreground mb-2">
-                No bookings yet
+                Cart is empty
               </h3>
               <p className="text-muted-foreground mb-6">
-                Start browsing artists to book for your next event
+                Start browsing artists to add to your cart
               </p>
               <Button onClick={() => navigate('/browse')} className="rounded-full">
                 Browse Artists
@@ -74,59 +51,81 @@ const Bookings = () => {
             </Card>
           ) : (
             <div className="space-y-6">
-              {bookings.map((booking) => (
-                <Card key={booking.id} className="p-6 hover:shadow-lg transition-shadow">
+              {cart.map((artist) => (
+                <Card key={artist.id} className="p-6 hover:shadow-lg transition-shadow">
                   <div className="flex gap-6">
                     <img 
-                      src={booking.image} 
-                      alt={booking.artistName}
-                      className="w-24 h-24 rounded-lg object-cover"
+                      src={artist.image} 
+                      alt={artist.name}
+                      className="w-24 h-24 rounded-lg object-cover cursor-pointer"
+                      onClick={() => navigate(`/artist/${artist.id}`)}
                     />
                     
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <h3 className="text-xl font-bold text-foreground mb-1">
-                            {booking.artistName}
+                          <h3 
+                            className="text-xl font-bold text-foreground mb-1 cursor-pointer hover:text-primary"
+                            onClick={() => navigate(`/artist/${artist.id}`)}
+                          >
+                            {artist.name}
                           </h3>
-                          <Badge className={getStatusColor(booking.status)}>
-                            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                          <Badge variant="outline">
+                            {artist.category}
                           </Badge>
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-foreground">
-                            {booking.price}
+                            {artist.price}
                           </div>
+                          <div className="text-sm text-muted-foreground">per event</div>
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <Calendar className="w-4 h-4" />
-                          <span>{new Date(booking.eventDate).toLocaleDateString('en-IN', { 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
-                          })}</span>
-                        </div>
+                      <div className="space-y-2 mb-4">
                         <div className="flex items-center gap-2 text-muted-foreground">
                           <MapPin className="w-4 h-4" />
-                          <span>{booking.location}</span>
+                          <span>{artist.location}</span>
                         </div>
                       </div>
 
-                      <div className="flex gap-3 mt-4">
-                        <Button variant="outline" size="sm" className="rounded-full">
-                          View Details
+                      <div className="flex gap-3">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="rounded-full"
+                          onClick={() => navigate(`/artist/${artist.id}`)}
+                        >
+                          View Profile
                         </Button>
-                        <Button variant="ghost" size="sm" className="rounded-full">
-                          Contact Artist
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="rounded-full text-destructive hover:text-destructive"
+                          onClick={() => handleRemoveFromCart(artist.id, artist.name)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Remove
                         </Button>
                       </div>
                     </div>
                   </div>
                 </Card>
               ))}
+              
+              <Card className="p-6 bg-primary/5 border-primary/20">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-1">Ready to book?</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {cart.length} artist{cart.length > 1 ? 's' : ''} in your cart
+                    </p>
+                  </div>
+                  <Button size="lg" className="rounded-full">
+                    Proceed to Checkout
+                  </Button>
+                </div>
+              </Card>
             </div>
           )}
         </div>

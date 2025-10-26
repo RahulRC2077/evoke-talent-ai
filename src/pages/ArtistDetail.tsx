@@ -1,9 +1,14 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, ArrowLeft, Calendar, MessageSquare } from "lucide-react";
+import { Star, MapPin, ArrowLeft, Calendar, MessageSquare, ShoppingCart } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { AvailabilityModal } from "@/components/AvailabilityModal";
+import { MessageModal } from "@/components/MessageModal";
+import { useToast } from "@/hooks/use-toast";
 
 // Same mock data as Browse page
 const MOCK_ARTISTS = [
@@ -85,6 +90,22 @@ const ArtistDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const artist = MOCK_ARTISTS.find(a => a.id === id);
+  const { addToCart, cart } = useCart();
+  const { toast } = useToast();
+  const [showAvailability, setShowAvailability] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+
+  const isInCart = artist ? cart.some(item => item.id === artist.id) : false;
+
+  const handleAddToCart = () => {
+    if (artist) {
+      addToCart(artist);
+      toast({
+        title: "Added to Cart!",
+        description: `${artist.name} has been added to your bookings.`,
+      });
+    }
+  };
 
   if (!artist) {
     return (
@@ -191,13 +212,32 @@ const ArtistDetail = () => {
               </div>
 
               <div className="space-y-3">
-                <Button size="lg" className="w-full">
+                <Button 
+                  size="lg" 
+                  className="w-full"
+                  onClick={() => setShowAvailability(true)}
+                >
                   <Calendar className="mr-2 h-5 w-5" />
                   Check Availability
                 </Button>
-                <Button size="lg" variant="outline" className="w-full">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => setShowMessage(true)}
+                >
                   <MessageSquare className="mr-2 h-5 w-5" />
                   Send Message
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant={isInCart ? "secondary" : "default"}
+                  className="w-full"
+                  onClick={handleAddToCart}
+                  disabled={isInCart}
+                >
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  {isInCart ? "In Cart" : "Add to Cart"}
                 </Button>
               </div>
 
@@ -226,6 +266,21 @@ const ArtistDetail = () => {
           </div>
         </div>
       </div>
+
+      {artist && (
+        <>
+          <AvailabilityModal
+            isOpen={showAvailability}
+            onClose={() => setShowAvailability(false)}
+            artistName={artist.name}
+          />
+          <MessageModal
+            isOpen={showMessage}
+            onClose={() => setShowMessage(false)}
+            artistName={artist.name}
+          />
+        </>
+      )}
     </div>
   );
 };

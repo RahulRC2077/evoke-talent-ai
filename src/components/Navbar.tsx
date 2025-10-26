@@ -1,10 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { LogOut, ShoppingCart } from "lucide-react";
 
 const Navbar = () => {
   const { isAuthenticated, logout, user } = useAuth();
+  const { cart } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -50,6 +53,19 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            {isAuthenticated && cart.length > 0 && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => navigate('/bookings')}
+                className="relative"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
+                  {cart.length}
+                </Badge>
+              </Button>
+            )}
             {isAuthenticated ? (
               <>
                 <span className="text-sm text-muted-foreground hidden md:inline">
