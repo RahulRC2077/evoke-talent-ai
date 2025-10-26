@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -9,12 +10,30 @@ import { Music } from "lucide-react";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated, login } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect if already authenticated
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Auth logic will be added when backend is connected
-    setTimeout(() => setIsLoading(false), 1000);
+    
+    const formData = new FormData(e.target as HTMLFormElement);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    
+    // Simulate network delay
+    setTimeout(() => {
+      login(email, password);
+      setIsLoading(false);
+      navigate('/');
+    }, 1000);
   };
 
   return (
@@ -40,15 +59,18 @@ const Auth = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="you@example.com" required />
+                <Input id="email" name="email" type="email" placeholder="test@example.com" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required />
+                <Input id="password" name="password" type="password" placeholder="any password" required />
               </div>
               <Button type="submit" className="w-full" variant="default" disabled={isLoading}>
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
+              <p className="text-xs text-center text-muted-foreground mt-2">
+                Dummy login - use any email and password
+              </p>
             </form>
           </TabsContent>
 
@@ -56,15 +78,15 @@ const Auth = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" type="text" placeholder="John Doe" required />
+                <Input id="name" name="name" type="text" placeholder="John Doe" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="signup-email">Email</Label>
-                <Input id="signup-email" type="email" placeholder="you@example.com" required />
+                <Input id="signup-email" name="email" type="email" placeholder="test@example.com" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="signup-password">Password</Label>
-                <Input id="signup-password" type="password" required />
+                <Input id="signup-password" name="password" type="password" placeholder="any password" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="user-type">I am a</Label>

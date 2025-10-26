@@ -1,7 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { LogOut } from "lucide-react";
 
 const Navbar = () => {
+  const { isAuthenticated, logout, user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <nav className="sticky top-0 z-50 bg-background border-b border-border/50">
       <div className="container mx-auto px-4">
@@ -13,9 +23,11 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/browse" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
-              Talent
-            </Link>
+            {isAuthenticated && (
+              <Link to="/browse" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
+                Talent
+              </Link>
+            )}
             <Link to="/how-it-works" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
               How it Works
             </Link>
@@ -25,21 +37,39 @@ const Navbar = () => {
             <Link to="/about" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
               About
             </Link>
-            <Link to="/bookings" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
-              Bookings
-            </Link>
-            <Link to="/messages" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
-              Messages
-            </Link>
+            {isAuthenticated && (
+              <>
+                <Link to="/bookings" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
+                  Bookings
+                </Link>
+                <Link to="/messages" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">
+                  Messages
+                </Link>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" asChild className="text-foreground">
-              <Link to="/auth">Log In</Link>
-            </Button>
-            <Button variant="default" size="sm" asChild>
-              <Link to="/auth">Sign Up</Link>
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <span className="text-sm text-muted-foreground hidden md:inline">
+                  {user?.name}
+                </span>
+                <Button variant="ghost" size="sm" onClick={handleLogout} className="text-foreground">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" asChild className="text-foreground">
+                  <Link to="/auth">Log In</Link>
+                </Button>
+                <Button variant="default" size="sm" asChild>
+                  <Link to="/auth">Sign Up</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
